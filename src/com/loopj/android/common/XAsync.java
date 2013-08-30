@@ -1,8 +1,12 @@
 package com.loopj.android.common;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.loopj.android.common.XHttpResponseHandler.OnCancelAsyncListener;
 import com.loopj.android.http.AsyncHttpClient;
 
-public class XAsync {
+public class XAsync implements OnCancelAsyncListener {
 
 	public static final String TAG = "XAsync";
 
@@ -53,15 +57,32 @@ public class XAsync {
 	}
 
 	public void getString(String url, XHttpResponseHandler responseHandler) {
+		bindEvent(responseHandler);
 		getHttpClient().get(url, responseHandler);
 	}
 
 	public void getJSONObject(String url, XHttpResponseHandler responseHandler) {
+		bindEvent(responseHandler);
 		getHttpClient().get(url, responseHandler);
 	}
 
 	public void getJSONArray(XHttpResponseHandler responseHandler) {
+		bindEvent(responseHandler);
+	}
 
+	/**
+	 * 事件绑定
+	 * 
+	 * @param responseHandler
+	 */
+	private void bindEvent(XHttpResponseHandler responseHandler) {
+		responseHandler.setOnCancelListener(this);
+	}
+
+	@Override
+	public void onAsyncCancel(Context context) {
+		Log.d(TAG, "我被取消了啊");
+		mHttpClient.cancelRequests(context, true);
 	}
 
 }

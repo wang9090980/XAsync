@@ -25,7 +25,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		final String url = "https://github.com/";
+		final String url = "http://hyxfblog.duapp.com/";
 		
 		XAsync.with().getString(url, new XStringHanler(this, true){
 

@@ -8,23 +8,34 @@ import android.content.DialogInterface.OnCancelListener;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
-public class XHttpResponseHandler extends AsyncHttpResponseHandler implements OnCancelListener {
+public class XHttpResponseHandler extends AsyncHttpResponseHandler implements OnCancelListener{
 
 	private boolean mShowDialog;
 	private LoadingDialog mDialog = null;
-	private Context mContext;
-	private boolean mCancel = false;
+	public Context mContext;
+	private OnCancelAsyncListener mListener;
 	
 	public XHttpResponseHandler(Context context, boolean showDialog) {
 		super();
 		mShowDialog = showDialog;
 		mContext = context;
 	}
+	
+	public XHttpResponseHandler(Context context, boolean showDialog,OnCancelAsyncListener listener) {
+		super();
+		mShowDialog = showDialog;
+		mContext = context;
+		mListener = listener;
+	}
+	
+	public void setOnCancelListener(OnCancelAsyncListener listener){
+		this.mListener = listener;
+	}
 
 	@Override
 	public void onStart() {
 		mDialog = LoadingUtils.showLoading(mContext, mShowDialog);
-		if (mDialog != null) {
+		if (mDialog != null && mListener != null) {
 			mDialog.setOnCancelListener(this);
 		}
 		super.onStart();
@@ -33,9 +44,6 @@ public class XHttpResponseHandler extends AsyncHttpResponseHandler implements On
 	@Override
 	public void onSuccess(int statusCode, Header[] headers, String content) {
 		LoadingUtils.dismissDialog(mDialog);
-		if(mCancel){
-			return;
-		}
 		super.onSuccess(statusCode, headers, content);
 	}
 
@@ -60,9 +68,15 @@ public class XHttpResponseHandler extends AsyncHttpResponseHandler implements On
 	public void onSuccess(int statusCode, String content) {
 		super.onSuccess(statusCode, content);
 	}
+	
+	public interface OnCancelAsyncListener{
+		void onAsyncCancel(Context context);
+	}
 
 	@Override
 	public void onCancel(DialogInterface dialog) {
-		mCancel = true;
+		if(mListener != null){
+			mListener.onAsyncCancel(mContext);
+		}
 	}
 }
