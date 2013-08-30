@@ -58,12 +58,12 @@ public class XAsync implements OnCancelAsyncListener {
 
 	public void getString(String url, XHttpResponseHandler responseHandler) {
 		bindEvent(responseHandler);
-		getHttpClient().get(url, responseHandler);
+		getHttpClient().get(responseHandler.mContext, url, responseHandler);
 	}
 
 	public void getJSONObject(String url, XHttpResponseHandler responseHandler) {
 		bindEvent(responseHandler);
-		getHttpClient().get(url, responseHandler);
+		getHttpClient().get(responseHandler.mContext, url, responseHandler);
 	}
 
 	public void getJSONArray(XHttpResponseHandler responseHandler) {
