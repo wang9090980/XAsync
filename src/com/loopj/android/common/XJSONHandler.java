@@ -11,7 +11,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 
-public class XJSONHandler extends XHttpResponseHandler {
+public class XJSONHandler extends XBaseHandler {
 
 	public XJSONHandler(Context context, boolean showDialog) {
 		super(context, showDialog);

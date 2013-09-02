@@ -9,7 +9,7 @@ import android.os.Message;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 
-public class XParserHandler<T> extends XHttpResponseHandler{
+public class XParserHandler<T> extends XBaseHandler{
 	private final Class<T> mClazz;
 	public XParserHandler(Context context, Class<T> clazz,boolean showDialog) {
 		super(context, showDialog);

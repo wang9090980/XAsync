@@ -8,20 +8,20 @@ import android.content.DialogInterface.OnCancelListener;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
-public class XHttpResponseHandler extends AsyncHttpResponseHandler implements OnCancelListener{
+public class XBaseHandler extends AsyncHttpResponseHandler implements OnCancelListener{
 
 	private boolean mShowDialog;
 	private LoadingDialog mDialog = null;
 	public Context mContext;
 	private OnCancelAsyncListener mListener;
 	
-	public XHttpResponseHandler(Context context, boolean showDialog) {
+	public XBaseHandler(Context context, boolean showDialog) {
 		super();
 		mShowDialog = showDialog;
 		mContext = context;
 	}
 	
-	public XHttpResponseHandler(Context context, boolean showDialog,OnCancelAsyncListener listener) {
+	public XBaseHandler(Context context, boolean showDialog,OnCancelAsyncListener listener) {
 		super();
 		mShowDialog = showDialog;
 		mContext = context;
@@ -69,6 +69,9 @@ public class XHttpResponseHandler extends AsyncHttpResponseHandler implements On
 		super.onSuccess(statusCode, content);
 	}
 	
+	/**
+	 * 异步请求取消接口
+	 */
 	public interface OnCancelAsyncListener{
 		void onAsyncCancel(Context context);
 	}
