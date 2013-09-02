@@ -11,11 +11,13 @@ import com.alibaba.fastjson.JSONException;
 
 /**
  * HTTP代理--返回解析后对象
+ * 
  * @param <T>
  */
-public class XParserHandler<T> extends XBaseHandler{
+public class XParserHandler<T> extends XBaseHandler {
 	private final Class<T> mClazz;
-	public XParserHandler(Context context, Class<T> clazz,boolean showDialog) {
+
+	public XParserHandler(Context context, Class<T> clazz, boolean showDialog) {
 		super(context, showDialog);
 		mClazz = clazz;
 	}
@@ -60,24 +62,19 @@ public class XParserHandler<T> extends XBaseHandler{
 		case SUCCESS_PARSER_MESSAGE:
 			Object[] response = (Object[]) msg.obj;
 			handleSuccessJsonMessage(((Integer) response[0]).intValue(),
-					(Header[]) response[1], (T)response[2]);
+					(Header[]) response[1], (T) response[2]);
 			break;
 		default:
 			super.handleMessage(msg);
 		}
-	}
-	
-	protected T parseResponse(String responseBody) throws JSONException {
-		responseBody = responseBody.trim();
-		return JSON.parseObject(responseBody, mClazz);
 	}
 
 	@SuppressWarnings("null")
 	protected void handleSuccessJsonMessage(int statusCode, Header[] headers,
 			T jsonResponse) {
 		if (jsonResponse != null) {
-			onSuccess(statusCode, headers,  jsonResponse);
-		}else {
+			onSuccess(statusCode, headers, jsonResponse);
+		} else {
 			onFailure(new JSONException("Unexpected type "
 					+ jsonResponse.getClass().getName()), (T) null);
 		}
@@ -90,7 +87,7 @@ public class XParserHandler<T> extends XBaseHandler{
 				T jsonResponse = parseResponse(responseBody);
 				if (jsonResponse != null) {
 					onFailure(e, jsonResponse);
-				}else {
+				} else {
 					onFailure(e, responseBody);
 				}
 			} else {
@@ -99,6 +96,18 @@ public class XParserHandler<T> extends XBaseHandler{
 		} catch (JSONException ex) {
 			onFailure(e, responseBody);
 		}
+	}
+
+	/**
+	 * 解析数据
+	 * 
+	 * @param responseBody
+	 * @return
+	 * @throws JSONException
+	 */
+	protected T parseResponse(String responseBody) throws JSONException {
+		responseBody = responseBody.trim();
+		return JSON.parseObject(responseBody, mClazz);
 	}
 
 }

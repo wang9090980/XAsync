@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.loopj.android.common.XBaseHandler.OnCancelAsyncListener;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.RequestParams;
 
 /**
  * XAsync
@@ -11,6 +12,8 @@ import com.loopj.android.http.AsyncHttpClient;
 public class XAsync implements OnCancelAsyncListener {
 
 	public static final String TAG = "XAsync";
+	
+	private static final String JSON_BODY = "body";
 
 	private static final String HTTP_HEADER_USER_AGENT_MESSAGE = "android GomeShopApp %s;";
 
@@ -58,18 +61,41 @@ public class XAsync implements OnCancelAsyncListener {
 		return mHttpClient;
 	}
 
-	public void getString(String url, XBaseHandler responseHandler) {
+	public void getString(String url, XStringHanler responseHandler) {
 		bindEvent(responseHandler);
 		getHttpClient().get(responseHandler.mContext, url, responseHandler);
 	}
 
-	public void getJSONObject(String url, XBaseHandler responseHandler) {
+	public void getJSON(String url, XJSONHandler responseHandler) {
 		bindEvent(responseHandler);
 		getHttpClient().get(responseHandler.mContext, url, responseHandler);
 	}
 
-	public void getJSONArray(XBaseHandler responseHandler) {
+	public <T> void getParser(String url, XParserHandler<T> responseHandler) {
 		bindEvent(responseHandler);
+		getHttpClient().get(responseHandler.mContext, url, responseHandler);
+	}
+
+	//..........................................................................
+	
+	public void postString(String url, String json,
+			XStringHanler responseHandler) {
+		bindEvent(responseHandler);
+		RequestParams params = new RequestParams(JSON_BODY, json);
+		getHttpClient().post(url, params, responseHandler);
+	}
+
+	public void postJSON(String url, String json, XJSONHandler responseHandler) {
+		bindEvent(responseHandler);
+		RequestParams params = new RequestParams(JSON_BODY, json);
+		getHttpClient().post(url, params, responseHandler);
+	}
+
+	public <T> void postParser(String url, String json,
+			XParserHandler<T> responseHandler) {
+		bindEvent(responseHandler);
+		RequestParams params = new RequestParams(JSON_BODY, json);
+		getHttpClient().post(url, params, responseHandler);
 	}
 
 	/**
