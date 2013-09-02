@@ -9,6 +9,10 @@ import android.os.Message;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 
+/**
+ * HTTP代理--返回解析后对象
+ * @param <T>
+ */
 public class XParserHandler<T> extends XBaseHandler{
 	private final Class<T> mClazz;
 	public XParserHandler(Context context, Class<T> clazz,boolean showDialog) {
