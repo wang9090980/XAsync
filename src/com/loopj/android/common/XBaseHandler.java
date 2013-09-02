@@ -28,10 +28,6 @@ public class XBaseHandler extends AsyncHttpResponseHandler implements OnCancelLi
 		mListener = listener;
 	}
 	
-	public void setOnCancelListener(OnCancelAsyncListener listener){
-		this.mListener = listener;
-	}
-
 	@Override
 	public void onStart() {
 		mDialog = LoadingUtils.showLoading(mContext, mShowDialog);
@@ -39,12 +35,6 @@ public class XBaseHandler extends AsyncHttpResponseHandler implements OnCancelLi
 			mDialog.setOnCancelListener(this);
 		}
 		super.onStart();
-	}
-
-	@Override
-	public void onSuccess(int statusCode, Header[] headers, String content) {
-		LoadingUtils.dismissDialog(mDialog);
-		super.onSuccess(statusCode, headers, content);
 	}
 
 	@Override
@@ -57,6 +47,12 @@ public class XBaseHandler extends AsyncHttpResponseHandler implements OnCancelLi
 	public void onFailure(Throwable error, String content) {
 		LoadingUtils.dismissDialog(mDialog);
 		super.onFailure(error, content);
+	}
+	
+	@Override
+	public void onSuccess(int statusCode, Header[] headers, String content) {
+		LoadingUtils.dismissDialog(mDialog);
+		super.onSuccess(statusCode, headers, content);
 	}
 
 	@Override
@@ -74,6 +70,10 @@ public class XBaseHandler extends AsyncHttpResponseHandler implements OnCancelLi
 	 */
 	public interface OnCancelAsyncListener{
 		void onAsyncCancel(Context context);
+	}
+	
+	public void setOnCancelListener(OnCancelAsyncListener listener){
+		this.mListener = listener;
 	}
 
 	@Override
