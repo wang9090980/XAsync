@@ -2,6 +2,7 @@ package com.loopj.android.common;
 
 import android.content.Context;
 
+import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.common.XBaseHandler.OnCancelAsyncListener;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.RequestParams;
@@ -12,7 +13,7 @@ import com.loopj.android.http.RequestParams;
 public class XAsync implements OnCancelAsyncListener {
 
 	public static final String TAG = "XAsync";
-	
+
 	private static final String JSON_BODY = "body";
 
 	private static final String HTTP_HEADER_USER_AGENT_MESSAGE = "android GomeShopApp %s;";
@@ -76,8 +77,8 @@ public class XAsync implements OnCancelAsyncListener {
 		getHttpClient().get(responseHandler.mContext, url, responseHandler);
 	}
 
-	//..........................................................................
-	
+	// ..........................................................................
+
 	public void postString(String url, String json,
 			XStringHanler responseHandler) {
 		bindEvent(responseHandler);
@@ -98,13 +99,36 @@ public class XAsync implements OnCancelAsyncListener {
 		getHttpClient().post(url, params, responseHandler);
 	}
 
+	public void postString(String url, JSONObject json,
+			XStringHanler responseHandler) {
+		bindEvent(responseHandler);
+		RequestParams params = new RequestParams(JSON_BODY, json.toJSONString());
+		getHttpClient().post(url, params, responseHandler);
+	}
+
+	public void postJSON(String url, JSONObject json,
+			XJSONHandler responseHandler) {
+		bindEvent(responseHandler);
+		RequestParams params = new RequestParams(JSON_BODY, json.toJSONString());
+		getHttpClient().post(url, params, responseHandler);
+	}
+
+	public <T> void postParser(String url, JSONObject json,
+			XParserHandler<T> responseHandler) {
+		bindEvent(responseHandler);
+		RequestParams params = new RequestParams(JSON_BODY, json.toJSONString());
+		getHttpClient().post(url, params, responseHandler);
+	}
+
 	/**
 	 * 事件绑定
 	 * 
 	 * @param responseHandler
 	 */
 	private void bindEvent(XBaseHandler responseHandler) {
-		responseHandler.setOnCancelListener(this);
+		if (responseHandler != null) {
+			responseHandler.setOnCancelListener(this);
+		}
 	}
 
 	@Override

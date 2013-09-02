@@ -1,18 +1,14 @@
 package com.example.xasync;
 
-import org.apache.http.Header;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.common.XAsync;
-import com.loopj.android.common.XParserHandler;
 
 public class MainActivity extends Activity implements OnClickListener {
 
@@ -33,27 +29,11 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-
-		XAsync.with().getParser(
-				URL_JSON_ARRAY,
-				new XParserHandler<UserInfoResponse>(this,
-						UserInfoResponse.class, true) {
-
-					@Override
-					public void onSuccess(int statusCode, Header[] headers,
-							UserInfoResponse response) {
-						super.onSuccess(statusCode, headers, response);
-						Log.d("async", "执行了");
-						tv.setText(response.getData().get(0).getUsername());
-					}
-
-					@Override
-					public void onFailure(Throwable e, String errorResponse) {
-						Toast.makeText(MainActivity.this, "异常了", Toast.LENGTH_SHORT).show();
-					}
-
-				});
-
+		JSONObject json = new JSONObject();
+		json.put("index", "3");
+		json.put("pagesize", "10");
+		json.put("keyword", "西游");
+		XAsync.with().postJSON(URL_JSON_OBJECT, json, null);
 	}
 
 }
