@@ -1,5 +1,6 @@
 package com.example.xasync;
 
+
 public class UserInfo {
 	private String username;
 	private String password;

@@ -1,5 +1,7 @@
 package com.loopj.android.common;
 
+import java.util.List;
+
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
 
@@ -34,6 +36,16 @@ public class XParserHandler<T> extends XBaseHandler {
 	public void onSuccess(int statusCode, T response) {
 		onSuccess(response);
 	}
+	public void onSuccess(List<T> response) {
+	}
+	
+	public void onSuccess(int statusCode, Header[] headers, List<T> response) {
+		onSuccess(statusCode, response);
+	}
+	
+	public void onSuccess(int statusCode, List<T> response) {
+		onSuccess(response);
+	}
 	
 	public void onFailure(Throwable error, String content) {
 		
@@ -44,9 +56,18 @@ public class XParserHandler<T> extends XBaseHandler {
 			String responseBody) {
 		if (statusCode != HttpStatus.SC_NO_CONTENT) {
 			try {
-				T jsonResponse = parseResponse(responseBody);
-				sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
-						statusCode, headers, jsonResponse }));
+				if(responseBody.startsWith("{")){
+					T jsonResponse = parseResponseObject(responseBody);
+					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
+							statusCode, headers, jsonResponse,0 }));
+				}else if(responseBody.startsWith("[")){
+					List<T> jsonResponse = parseResponseArray(responseBody);
+					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
+							statusCode, headers, jsonResponse,1 }));
+				}else{
+					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
+							statusCode, null }));
+				}
 			} catch (JSONException e) {
 				sendFailureMessage(e, responseBody);
 			}
@@ -63,21 +84,29 @@ public class XParserHandler<T> extends XBaseHandler {
 		case SUCCESS_PARSER_MESSAGE:
 			Object[] response = (Object[]) msg.obj;
 			handleSuccessJsonMessage(((Integer) response[0]).intValue(),
-					(Header[]) response[1], (T) response[2]);
+					(Header[]) response[1],  response[2], response[3]);
 			break;
 		default:
 			super.handleMessage(msg);
 		}
 	}
 
-	@SuppressWarnings("null")
+	@SuppressWarnings("unchecked")
 	protected void handleSuccessJsonMessage(int statusCode, Header[] headers,
-			T jsonResponse) {
+			Object jsonResponse,Object flag) {
 		if (jsonResponse != null) {
-			onSuccess(statusCode, headers, jsonResponse);
+			switch (Integer.parseInt(flag.toString())) {
+			case 0: 
+				onSuccess(statusCode, headers, (T)jsonResponse);
+				break;
+			case 1:
+				onSuccess(statusCode, headers, (List<T>)jsonResponse);
+			default:
+				onSuccess(statusCode, headers, jsonResponse.toString());
+				break;
+			}
 		} else {
-			onFailure(new JSONException("Unexpected type "
-					+ jsonResponse.getClass().getName()), null);
+			onFailure(new JSONException("Unexpected jsonResponse"), null);
 		}
 	}
 
@@ -93,9 +122,21 @@ public class XParserHandler<T> extends XBaseHandler {
 	 * @return
 	 * @throws JSONException
 	 */
-	protected T parseResponse(String responseBody) throws JSONException {
+	protected T parseResponseObject(String responseBody) throws JSONException {
 		responseBody = responseBody.trim();
 		return JSON.parseObject(responseBody, mClazz);
+	}
+	
+	/**
+	 * 解析数据
+	 * 
+	 * @param responseBody
+	 * @return
+	 * @throws JSONException
+	 */
+	protected List<T> parseResponseArray(String responseBody) throws JSONException {
+		responseBody = responseBody.trim();
+		return JSON.parseArray(responseBody, mClazz);
 	}
 
 }
