@@ -8,6 +8,9 @@ import android.content.DialogInterface.OnCancelListener;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+/**
+ * HTTP代理基类
+ */
 public class XBaseHandler extends AsyncHttpResponseHandler implements OnCancelListener{
 
 	private boolean mShowDialog;
