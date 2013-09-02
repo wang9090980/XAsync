@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- *HTTP代理--返回JSON
+ * HTTP代理--返回JSON
  */
 public class XJSONHandler extends XBaseHandler {
 
@@ -23,80 +23,26 @@ public class XJSONHandler extends XBaseHandler {
 
 	protected static final int SUCCESS_JSON_MESSAGE = 100;
 
-	/**
-	 * Fired when a request returns successfully and contains a json object at
-	 * the base of the response string. Override to handle in your own code.
-	 * 
-	 * @param response
-	 *            the parsed json object found in the server response (if any)
-	 */
-	public void onSuccess(JSONObject response) {
-	}
-
-	/**
-	 * Fired when a request returns successfully and contains a json array at
-	 * the base of the response string. Override to handle in your own code.
-	 * 
-	 * @param response
-	 *            the parsed json array found in the server response (if any)
-	 */
-	public void onSuccess(JSONArray response) {
-	}
-
-	/**
-	 * Fired when a request returns successfully and contains a json object at
-	 * the base of the response string. Override to handle in your own code.
-	 * 
-	 * @param statusCode
-	 *            the status code of the response
-	 * @param headers
-	 *            the headers of the HTTP response
-	 * @param response
-	 *            the parsed json object found in the server response (if any)
-	 */
 	public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 		onSuccess(statusCode, response);
 	}
 
-	/**
-	 * Fired when a request returns successfully and contains a json object at
-	 * the base of the response string. Override to handle in your own code.
-	 * 
-	 * @param statusCode
-	 *            the status code of the response
-	 * @param response
-	 *            the parsed json object found in the server response (if any)
-	 */
-	public void onSuccess(int statusCode, JSONObject response) {
-		onSuccess(response);
-	}
-
-	/**
-	 * Fired when a request returns successfully and contains a json array at
-	 * the base of the response string. Override to handle in your own code.
-	 * 
-	 * @param statusCode
-	 *            the status code of the response
-	 * @param headers
-	 *            the headers of the HTTP response
-	 * @param response
-	 *            the parsed json array found in the server response (if any)
-	 */
 	public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
 		onSuccess(statusCode, response);
 	}
 
-	/**
-	 * Fired when a request returns successfully and contains a json array at
-	 * the base of the response string. Override to handle in your own code.
-	 * 
-	 * @param statusCode
-	 *            the status code of the response
-	 * @param response
-	 *            the parsed json array found in the server response (if any)
-	 */
 	public void onSuccess(int statusCode, JSONArray response) {
 		onSuccess(response);
+	}
+	
+	public void onSuccess(int statusCode, JSONObject response) {
+		onSuccess(response);
+	}
+	
+	public void onSuccess(JSONObject response) {
+	}
+
+	public void onSuccess(JSONArray response) {
 	}
 
 	public void onFailure(Throwable e, JSONObject errorResponse) {
@@ -104,10 +50,6 @@ public class XJSONHandler extends XBaseHandler {
 
 	public void onFailure(Throwable e, JSONArray errorResponse) {
 	}
-
-	//
-	// Pre-processing of messages (executes in background threadpool thread)
-	//
 
 	@Override
 	protected void sendSuccessMessage(int statusCode, Header[] headers,
@@ -125,11 +67,6 @@ public class XJSONHandler extends XBaseHandler {
 					statusCode, new JSONObject() }));
 		}
 	}
-
-	//
-	// Pre-processing of messages (in original calling thread, typically the UI
-	// thread)
-	//
 
 	@Override
 	protected void handleMessage(Message msg) {
@@ -156,21 +93,6 @@ public class XJSONHandler extends XBaseHandler {
 		}
 	}
 
-	protected Object parseResponse(String responseBody) throws JSONException {
-		Object result = null;
-		// trim the string to prevent start with blank, and test if the string
-		// is valid JSON, because the parser don't do this :(. If Json is not
-		// valid this will return null
-		responseBody = responseBody.trim();
-		if (responseBody.startsWith("{") || responseBody.startsWith("[")) {
-			result = JSON.parse(responseBody);
-		}
-		if (result == null) {
-			result = responseBody;
-		}
-		return result;
-	}
-
 	@Override
 	protected void handleFailureMessage(Throwable e, String responseBody) {
 		try {
@@ -189,6 +111,25 @@ public class XJSONHandler extends XBaseHandler {
 		} catch (JSONException ex) {
 			onFailure(e, responseBody);
 		}
+	}
+	
+	/**
+	 * 
+	 * @param responseBody
+	 * @return
+	 * @throws JSONException
+	 */
+	private Object parseResponse(String responseBody) throws JSONException {
+		Object result = null;
+
+		responseBody = responseBody.trim();
+		if (responseBody.startsWith("{") || responseBody.startsWith("[")) {
+			result = JSON.parse(responseBody);
+		}
+		if (result == null) {
+			result = responseBody;
+		}
+		return result;
 	}
 
 }
