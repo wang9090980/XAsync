@@ -34,8 +34,9 @@ public class XParserHandler<T> extends XBaseHandler {
 	public void onSuccess(int statusCode, T response) {
 		onSuccess(response);
 	}
-
-	public void onFailure(Throwable e, T errorResponse) {
+	
+	public void onFailure(Throwable error, String content) {
+		
 	}
 
 	@Override
@@ -76,26 +77,13 @@ public class XParserHandler<T> extends XBaseHandler {
 			onSuccess(statusCode, headers, jsonResponse);
 		} else {
 			onFailure(new JSONException("Unexpected type "
-					+ jsonResponse.getClass().getName()), (T) null);
+					+ jsonResponse.getClass().getName()), null);
 		}
 	}
 
 	@Override
 	protected void handleFailureMessage(Throwable e, String responseBody) {
-		try {
-			if (responseBody != null) {
-				T jsonResponse = parseResponse(responseBody);
-				if (jsonResponse != null) {
-					onFailure(e, jsonResponse);
-				} else {
-					onFailure(e, responseBody);
-				}
-			} else {
-				onFailure(e, "");
-			}
-		} catch (JSONException ex) {
-			onFailure(e, responseBody);
-		}
+		onFailure(e, responseBody);
 	}
 
 	/**
