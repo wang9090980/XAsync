@@ -14,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
-import com.loopj.android.common.XAsync;
+import com.loopj.android.common.XHttp;
 import com.loopj.android.common.XParserHandler;
 
 public class MainActivity extends Activity implements OnClickListener {
@@ -42,19 +42,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		json.put("index", "3");
 		json.put("pagesize", "10");
 		json.put("keyword", "西游");
-		XAsync.with().postParser(URL_JSON_ARRAY, json, new XParserHandler<UserInfo>(this, UserInfo.class, true){
-
-			@Override
-			public void onSuccess(UserInfo response) {
-				Log.d(TAG, "UserInfo");
-			}
-
-			@Override
-			public void onSuccess(List<UserInfo> response) {
-				Log.d(TAG, "List<UserInfo>");
-			}
-			
-		});
 	}
 
 }

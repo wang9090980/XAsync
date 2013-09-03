@@ -8,9 +8,9 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.RequestParams;
 
 /**
- * XAsync
+ * XHttp
  */
-public class XAsync implements OnCancelAsyncListener {
+public class XHttp implements OnCancelAsyncListener {
 
 	public static final String TAG = "XAsync";
 
@@ -20,9 +20,9 @@ public class XAsync implements OnCancelAsyncListener {
 
 	private static AsyncHttpClient mHttpClient;
 
-	private static XAsync sInstance = null;
+	private static XHttp sInstance = null;
 
-	private XAsync() {
+	private XHttp() {
 		this.init();
 	}
 
@@ -32,9 +32,9 @@ public class XAsync implements OnCancelAsyncListener {
 	 * @param context
 	 * @return
 	 */
-	public static XAsync with() {
+	public static XHttp with() {
 		if (sInstance == null) {
-			sInstance = new XAsync();
+			sInstance = new XHttp();
 		}
 		return sInstance;
 	}
