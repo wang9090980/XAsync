@@ -67,7 +67,7 @@ public class XJSONHandler extends XBaseHandler {
 				sendFailureMessage(e, responseBody);
 			}
 		} else {
-			sendMessage(obtainMessage(ERROR_JSON_MESSAGE, new Object[] {
+			sendMessage(obtainMessage(SUCCESS_JSON_MESSAGE, new Object[] {
 					statusCode, null, null }));
 		}
 	}
