@@ -16,6 +16,8 @@ public class XHttp implements OnCancelAsyncListener {
 
 	private static final String JSON_BODY = "body";
 
+	private static final int TIME_OUT = 30 * 1000;
+
 	private static final String HTTP_HEADER_USER_AGENT_MESSAGE = "android GomeShopApp %s;";
 
 	private static AsyncHttpClient mHttpClient;
@@ -48,6 +50,7 @@ public class XHttp implements OnCancelAsyncListener {
 		mHttpClient = new AsyncHttpClient();
 		mHttpClient.setUserAgent(String.format(HTTP_HEADER_USER_AGENT_MESSAGE,
 				"28.0.1"));
+		mHttpClient.setTimeout(TIME_OUT);
 	}
 
 	/**

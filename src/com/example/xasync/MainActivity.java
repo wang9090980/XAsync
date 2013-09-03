@@ -1,12 +1,7 @@
 package com.example.xasync;
 
-import java.util.List;
-
-import org.apache.http.Header;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -15,7 +10,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.common.XHttp;
-import com.loopj.android.common.XParserHandler;
+import com.loopj.android.common.XStringHanler;
 
 public class MainActivity extends Activity implements OnClickListener {
 
@@ -42,6 +37,14 @@ public class MainActivity extends Activity implements OnClickListener {
 		json.put("index", "3");
 		json.put("pagesize", "10");
 		json.put("keyword", "西游");
+		XHttp.with().getString(URL_JSON_ARRAY, new XStringHanler(this, true){
+
+			@Override
+			public void onSuccess(String content) {
+				Toast.makeText(MainActivity.this, content , Toast.LENGTH_SHORT).show();
+			}
+			
+		});
 	}
 
 }
