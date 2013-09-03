@@ -19,6 +19,8 @@ import com.loopj.android.common.XParserHandler;
 
 public class MainActivity extends Activity implements OnClickListener {
 
+	private static final String TAG = "async";
+	
 	private Button btn;
 	private TextView tv;
 
@@ -43,18 +45,13 @@ public class MainActivity extends Activity implements OnClickListener {
 		XAsync.with().postParser(URL_JSON_ARRAY, json, new XParserHandler<UserInfo>(this, UserInfo.class, true){
 
 			@Override
-			public void onSuccess(int statusCode, Header[] headers,
-					UserInfo response) {
-				super.onSuccess(statusCode, headers, response);
-				Log.d("async", "UserInfo");
+			public void onSuccess(UserInfo response) {
+				Log.d(TAG, "UserInfo");
 			}
 
 			@Override
-			public void onSuccess(int statusCode, Header[] headers,
-					List<UserInfo> response) {
-				super.onSuccess(statusCode, headers, response);
-				Log.d("async", "List<UserInfo>");
-				Toast.makeText(MainActivity.this, response.get(0).getName(), Toast.LENGTH_SHORT).show();
+			public void onSuccess(List<UserInfo> response) {
+				Log.d(TAG, "List<UserInfo>");
 			}
 			
 		});

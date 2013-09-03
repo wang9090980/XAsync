@@ -28,7 +28,8 @@ public class XParserHandler<T> extends XBaseHandler {
 
 	protected static final int SUCCESS_PARSER_MESSAGE = 1000;
 
-	public void onSuccess(T response) {
+	public void onSuccess(T response){
+		
 	}
 
 	public void onSuccess(int statusCode, Header[] headers, T response) {
@@ -38,7 +39,9 @@ public class XParserHandler<T> extends XBaseHandler {
 	public void onSuccess(int statusCode, T response) {
 		onSuccess(response);
 	}
-	public void onSuccess(List<T> response) {
+	
+	public void onSuccess(List<T> response){
+		
 	}
 	
 	public void onSuccess(int statusCode, Header[] headers, List<T> response) {

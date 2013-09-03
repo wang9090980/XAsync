@@ -62,16 +62,40 @@ public class XAsync implements OnCancelAsyncListener {
 		return mHttpClient;
 	}
 
+	/**
+	 * GET请求返回 String
+	 * 
+	 * @param url
+	 *            服务器端接口URL
+	 * @param responseHandler
+	 *            服务器端response代理
+	 */
 	public void getString(String url, XStringHanler responseHandler) {
 		bindEvent(responseHandler);
 		getHttpClient().get(responseHandler.mContext, url, responseHandler);
 	}
 
+	/**
+	 * GET请求返回 JSON对象
+	 * 
+	 * @param url
+	 *            服务器端接口URL
+	 * @param responseHandler
+	 *            服务器端response代理
+	 */
 	public void getJSON(String url, XJSONHandler responseHandler) {
 		bindEvent(responseHandler);
 		getHttpClient().get(responseHandler.mContext, url, responseHandler);
 	}
 
+	/**
+	 * GET请求返回 实体对象
+	 * 
+	 * @param url
+	 *            服务器端接口URL
+	 * @param responseHandler
+	 *            服务器端response代理
+	 */
 	public <T> void getParser(String url, XParserHandler<T> responseHandler) {
 		bindEvent(responseHandler);
 		getHttpClient().get(responseHandler.mContext, url, responseHandler);
@@ -79,6 +103,16 @@ public class XAsync implements OnCancelAsyncListener {
 
 	// ..........................................................................
 
+	/**
+	 * POST请求返回 String
+	 * 
+	 * @param url
+	 *            服务器端接口URL
+	 * @param json
+	 *            请求参数【String】
+	 * @param responseHandler
+	 *            服务器端response代理
+	 */
 	public void postString(String url, String json,
 			XStringHanler responseHandler) {
 		bindEvent(responseHandler);
@@ -86,12 +120,32 @@ public class XAsync implements OnCancelAsyncListener {
 		getHttpClient().post(url, params, responseHandler);
 	}
 
+	/**
+	 * POST请求返回 JSON对象
+	 * 
+	 * @param url
+	 *            服务器端接口URL
+	 * @param json
+	 *            请求参数【String】
+	 * @param responseHandler
+	 *            服务器端response代理
+	 */
 	public void postJSON(String url, String json, XJSONHandler responseHandler) {
 		bindEvent(responseHandler);
 		RequestParams params = new RequestParams(JSON_BODY, json);
 		getHttpClient().post(url, params, responseHandler);
 	}
 
+	/**
+	 * POST请求返回 实体对象
+	 * 
+	 * @param url
+	 *            服务器端接口URL
+	 * @param json
+	 *            请求参数【String】
+	 * @param responseHandler
+	 *            服务器端response代理
+	 */
 	public <T> void postParser(String url, String json,
 			XParserHandler<T> responseHandler) {
 		bindEvent(responseHandler);
@@ -99,6 +153,16 @@ public class XAsync implements OnCancelAsyncListener {
 		getHttpClient().post(url, params, responseHandler);
 	}
 
+	/**
+	 * POST请求返回 String
+	 * 
+	 * @param url
+	 *            服务器端接口URL
+	 * @param json
+	 *            请求参数【JSONObject】
+	 * @param responseHandler
+	 *            服务器端response代理
+	 */
 	public void postString(String url, JSONObject json,
 			XStringHanler responseHandler) {
 		bindEvent(responseHandler);
@@ -106,6 +170,16 @@ public class XAsync implements OnCancelAsyncListener {
 		getHttpClient().post(url, params, responseHandler);
 	}
 
+	/**
+	 * POST请求返回 JSON对象
+	 * 
+	 * @param url
+	 *            服务器端接口URL
+	 * @param json
+	 *            请求参数【JSONObject】
+	 * @param responseHandler
+	 *            服务器端response代理
+	 */
 	public void postJSON(String url, JSONObject json,
 			XJSONHandler responseHandler) {
 		bindEvent(responseHandler);
@@ -113,6 +187,16 @@ public class XAsync implements OnCancelAsyncListener {
 		getHttpClient().post(url, params, responseHandler);
 	}
 
+	/**
+	 * POST请求返回 实体对象
+	 * 
+	 * @param url
+	 *            服务器端接口URL
+	 * @param json
+	 *            请求参数【JSONObject】
+	 * @param responseHandler
+	 *            服务器端response代理
+	 */
 	public <T> void postParser(String url, JSONObject json,
 			XParserHandler<T> responseHandler) {
 		bindEvent(responseHandler);
