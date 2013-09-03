@@ -22,6 +22,7 @@ public class XJSONHandler extends XBaseHandler {
 	}
 
 	protected static final int SUCCESS_JSON_MESSAGE = 100;
+	protected static final int ERROR_JSON_MESSAGE = 101;
 
 	public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 		onSuccess(statusCode, response);
@@ -34,11 +35,11 @@ public class XJSONHandler extends XBaseHandler {
 	public void onSuccess(int statusCode, JSONArray response) {
 		onSuccess(response);
 	}
-	
+
 	public void onSuccess(int statusCode, JSONObject response) {
 		onSuccess(response);
 	}
-	
+
 	public void onSuccess(JSONObject response) {
 	}
 
@@ -46,14 +47,17 @@ public class XJSONHandler extends XBaseHandler {
 	}
 
 	public void onFailure(Throwable e, JSONObject errorResponse) {
+
 	}
 
 	public void onFailure(Throwable e, JSONArray errorResponse) {
+
 	}
 
 	@Override
 	protected void sendSuccessMessage(int statusCode, Header[] headers,
 			String responseBody) {
+		// 204状态是指服务器成功处理了客户端请求，但服务器无返回内容。
 		if (statusCode != HttpStatus.SC_NO_CONTENT) {
 			try {
 				Object jsonResponse = parseResponse(responseBody);
@@ -63,18 +67,25 @@ public class XJSONHandler extends XBaseHandler {
 				sendFailureMessage(e, responseBody);
 			}
 		} else {
-			sendMessage(obtainMessage(SUCCESS_JSON_MESSAGE, new Object[] {
-					statusCode, new JSONObject() }));
+			sendMessage(obtainMessage(ERROR_JSON_MESSAGE, new Object[] {
+					statusCode, null, null }));
 		}
 	}
 
 	@Override
 	protected void handleMessage(Message msg) {
 		switch (msg.what) {
-		case SUCCESS_JSON_MESSAGE:
+		case SUCCESS_JSON_MESSAGE: {
 			Object[] response = (Object[]) msg.obj;
 			handleSuccessJsonMessage(((Integer) response[0]).intValue(),
 					(Header[]) response[1], response[2]);
+		}
+			break;
+		case ERROR_JSON_MESSAGE: {
+			// Object[] errorResponse = (Object[]) msg.obj;
+			String errorMessage = "服务器数据返回为空";
+			handleFailureMessage(new Exception(errorMessage), errorMessage);
+		}
 			break;
 		default:
 			super.handleMessage(msg);
@@ -112,7 +123,7 @@ public class XJSONHandler extends XBaseHandler {
 			onFailure(e, responseBody);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param responseBody

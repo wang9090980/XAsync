@@ -54,7 +54,7 @@ public class MainActivity extends Activity implements OnClickListener {
 					List<UserInfo> response) {
 				super.onSuccess(statusCode, headers, response);
 				Log.d("async", "List<UserInfo>");
-				Toast.makeText(MainActivity.this, response.get(0).getEmail(), Toast.LENGTH_SHORT).show();
+				Toast.makeText(MainActivity.this, response.get(0).getName(), Toast.LENGTH_SHORT).show();
 			}
 			
 		});

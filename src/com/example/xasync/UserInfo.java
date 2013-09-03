@@ -1,16 +1,28 @@
 package com.example.xasync;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 
 public class UserInfo {
-	private String username;
+	@JSONField(name="username")
+	private String name;
 	private String password;
 	private String email;
 	private String phone;
-	public String getUsername() {
-		return username;
+	@JSONField(name="regTime",format="yyyy-MM-dd HH:mm:ss")
+	private String reg;
+
+	public String getReg() {
+		return reg;
 	}
-	public void setUsername(String username) {
-		this.username = username;
+	public void setReg(String reg) {
+		this.reg = reg;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	public String getPassword() {
 		return password;

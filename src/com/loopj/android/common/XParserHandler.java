@@ -18,13 +18,15 @@ import com.alibaba.fastjson.JSONException;
  */
 public class XParserHandler<T> extends XBaseHandler {
 	private final Class<T> mClazz;
+	private static final int JSON_OBJECT = 0;
+	private static final int JSON_ARRAY = 1;
 
 	public XParserHandler(Context context, Class<T> clazz, boolean showDialog) {
 		super(context, showDialog);
 		mClazz = clazz;
 	}
 
-	protected static final int SUCCESS_PARSER_MESSAGE = 100;
+	protected static final int SUCCESS_PARSER_MESSAGE = 1000;
 
 	public void onSuccess(T response) {
 	}
@@ -59,11 +61,11 @@ public class XParserHandler<T> extends XBaseHandler {
 				if(responseBody.startsWith("{")){
 					T jsonResponse = parseResponseObject(responseBody);
 					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
-							statusCode, headers, jsonResponse,0 }));
+							statusCode, headers, jsonResponse,JSON_OBJECT }));
 				}else if(responseBody.startsWith("[")){
 					List<T> jsonResponse = parseResponseArray(responseBody);
 					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
-							statusCode, headers, jsonResponse,1 }));
+							statusCode, headers, jsonResponse,JSON_ARRAY }));
 				}else{
 					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
 							statusCode, null }));
@@ -96,10 +98,10 @@ public class XParserHandler<T> extends XBaseHandler {
 			Object jsonResponse,Object flag) {
 		if (jsonResponse != null) {
 			switch (Integer.parseInt(flag.toString())) {
-			case 0: 
+			case JSON_OBJECT: 
 				onSuccess(statusCode, headers, (T)jsonResponse);
 				break;
-			case 1:
+			case JSON_ARRAY:
 				onSuccess(statusCode, headers, (List<T>)jsonResponse);
 			default:
 				onSuccess(statusCode, headers, jsonResponse.toString());
