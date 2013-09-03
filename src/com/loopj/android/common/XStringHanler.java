@@ -5,7 +5,7 @@ import android.content.Context;
 /**
  * HTTP代理--返回字符串
  */
-public class XStringHanler extends XBaseHandler{
+public abstract class XStringHanler extends XBaseHandler {
 
 	public XStringHanler(Context context, boolean showDialog) {
 		super(context, showDialog);

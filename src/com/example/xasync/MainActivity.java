@@ -41,7 +41,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void onSuccess(String content) {
-				Toast.makeText(MainActivity.this, content , Toast.LENGTH_SHORT).show();
+				Toast.makeText(MainActivity.this, content, Toast.LENGTH_SHORT).show();
 			}
 			
 		});
