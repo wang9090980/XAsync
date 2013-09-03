@@ -2,14 +2,17 @@ package com.example.xasync;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.common.XHttp;
+import com.loopj.android.common.XJSONHandler;
 import com.loopj.android.common.XStringHanler;
 
 public class MainActivity extends Activity implements OnClickListener {
@@ -37,11 +40,31 @@ public class MainActivity extends Activity implements OnClickListener {
 		json.put("index", "3");
 		json.put("pagesize", "10");
 		json.put("keyword", "西游");
-		XHttp.with().getString(URL_JSON_ARRAY, new XStringHanler(this, true){
+		XHttp.with().getJSON(URL_JSON_ARRAY, new XJSONHandler(this, true){
 
 			@Override
-			public void onSuccess(String content) {
-				Toast.makeText(MainActivity.this, content, Toast.LENGTH_SHORT).show();
+			public void onSuccess(JSONObject response) {
+				Log.d(TAG, "onSuccess-JSONObject");
+			}
+
+			@Override
+			public void onSuccess(JSONArray response) {
+				Log.d(TAG, "onSuccess-JSONArray");
+			}
+			
+			@Override
+			public void onFailure(Throwable e, String errorResponse) {
+				Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+			}
+
+			@Override
+			public void onStart() {
+				Log.d(TAG, "onStart");
+			}
+
+			@Override
+			public void onFinish() {
+				Log.d(TAG, "onFinish");
 			}
 			
 		});

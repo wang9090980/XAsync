@@ -46,29 +46,35 @@ public class XJSONHandler extends XBaseHandler {
 	public void onSuccess(JSONArray response) {
 	}
 
-	public void onFailure(Throwable e, JSONObject errorResponse) {
-
-	}
-
-	public void onFailure(Throwable e, JSONArray errorResponse) {
+	public void onFailure(Throwable e, String errorResponse) {
 
 	}
 
 	@Override
 	protected void sendSuccessMessage(int statusCode, Header[] headers,
 			String responseBody) {
-		// 204状态是指服务器成功处理了客户端请求，但服务器无返回内容。
-		if (statusCode != HttpStatus.SC_NO_CONTENT) {
+		
+		switch (statusCode) {
+		case HttpStatus.SC_OK:{
 			try {
 				Object jsonResponse = parseResponse(responseBody);
 				sendMessage(obtainMessage(SUCCESS_JSON_MESSAGE, new Object[] {
 						statusCode, headers, jsonResponse }));
 			} catch (JSONException e) {
-				sendFailureMessage(e, responseBody);
+				sendFailureMessage(new Exception("JSON解析异常"), responseBody);
 			}
-		} else {
+		}
+			break;
+		case HttpStatus.SC_NO_CONTENT:{// 204状态是指服务器成功处理了客户端请求，但服务器无返回内容。
 			sendMessage(obtainMessage(SUCCESS_JSON_MESSAGE, new Object[] {
+					statusCode, null, null }));			
+		}
+			break;
+
+		default:
+			sendMessage(obtainMessage(ERROR_JSON_MESSAGE, new Object[] {
 					statusCode, null, null }));
+			break;
 		}
 	}
 
@@ -77,13 +83,13 @@ public class XJSONHandler extends XBaseHandler {
 		switch (msg.what) {
 		case SUCCESS_JSON_MESSAGE: {
 			Object[] response = (Object[]) msg.obj;
-			handleSuccessJsonMessage(((Integer) response[0]).intValue(),
+			int status = ((Integer) response[0]).intValue();
+			handleSuccessJsonMessage(status,
 					(Header[]) response[1], response[2]);
 		}
 			break;
 		case ERROR_JSON_MESSAGE: {
-			// Object[] errorResponse = (Object[]) msg.obj;
-			String errorMessage = "服务器数据返回为空";
+			String errorMessage = "服务器错误";
 			handleFailureMessage(new Exception(errorMessage), errorMessage);
 		}
 			break;
@@ -94,34 +100,22 @@ public class XJSONHandler extends XBaseHandler {
 
 	protected void handleSuccessJsonMessage(int statusCode, Header[] headers,
 			Object jsonResponse) {
-		if (jsonResponse instanceof JSONObject) {
-			onSuccess(statusCode, headers, (JSONObject) jsonResponse);
-		} else if (jsonResponse instanceof JSONArray) {
-			onSuccess(statusCode, headers, (JSONArray) jsonResponse);
-		} else {
-			onFailure(new JSONException("Unexpected type "
-					+ jsonResponse.getClass().getName()), (JSONObject) null);
+		if(statusCode != HttpStatus.SC_NO_CONTENT){
+			if (jsonResponse instanceof JSONObject) {
+				onSuccess(statusCode, headers, (JSONObject) jsonResponse);
+			} else if (jsonResponse instanceof JSONArray) {
+				onSuccess(statusCode, headers, (JSONArray) jsonResponse);
+			} else if(jsonResponse != null) {
+				onFailure(new Exception("数据解析错误"), null);
+			}
+		}else{
+			onFailure(new Exception("服务器响应成功，但未返回数据"), null);
 		}
 	}
 
 	@Override
 	protected void handleFailureMessage(Throwable e, String responseBody) {
-		try {
-			if (responseBody != null) {
-				Object jsonResponse = parseResponse(responseBody);
-				if (jsonResponse instanceof JSONObject) {
-					onFailure(e, (JSONObject) jsonResponse);
-				} else if (jsonResponse instanceof JSONArray) {
-					onFailure(e, (JSONArray) jsonResponse);
-				} else {
-					onFailure(e, responseBody);
-				}
-			} else {
-				onFailure(e, "");
-			}
-		} catch (JSONException ex) {
-			onFailure(e, responseBody);
-		}
+		onFailure(e, null);
 	}
 
 	/**
