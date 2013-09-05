@@ -56,7 +56,7 @@ public class XException extends Exception {
 		this.type = type;
 		this.code = code;
 		if (Debug) {
-			this.saveErrorLog(excp);
+			//this.saveErrorLog(excp);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class XException extends Exception {
 		} else if (e instanceof IOException) {
 			return new XException(TYPE_IO, 0, e);
 		}
-		return run(e);
+		return runTime(e);
 	}
 
 	/**
@@ -109,6 +109,16 @@ public class XException extends Exception {
 	 * @return
 	 */
 	public static XException xml(Exception e) {
+		return new XException(TYPE_XML, 0, e);
+	}
+	
+	/**
+	 * JSON异常
+	 * 
+	 * @param e
+	 * @return
+	 */
+	public static XException json(Exception e) {
 		return new XException(TYPE_XML, 0, e);
 	}
 
@@ -166,24 +176,14 @@ public class XException extends Exception {
 	 * @param e
 	 * @return
 	 */
-	public static XException run(Exception e) {
+	public static XException runTime(Exception e) {
 		return new XException(TYPE_RUN, 0, e);
-	}
-
-	/**
-	 * 获取APP异常崩溃处理对象
-	 * 
-	 * @param context
-	 * @return
-	 */
-	public static XException getAppExceptionHandler() {
-		return new XException();
 	}
 
 	// ------------------消息展示--------------------
 
 	/**
-	 * 提示友好的错误信息
+	 * show error message friendly
 	 * 
 	 * @param ctx
 	 */
@@ -192,7 +192,7 @@ public class XException extends Exception {
 	}
 
 	/**
-	 * 提示友好的错误信息
+	 * show error message friendly by type
 	 * 
 	 * @param ctx
 	 * @param type
@@ -201,47 +201,47 @@ public class XException extends Exception {
 		switch (this.getType()) {
 		case TYPE_HTTP_CODE:
 			String err = String.format("网络异常，错误码：%d", this.getCode());
-			makeMessage(ctx, err, type);
+			showErrorMessage(ctx, err, type);
 			break;
 		case TYPE_HTTP_ERROR:
-			makeMessage(ctx, "网络异常，请求超时", type);
+			showErrorMessage(ctx, "网络异常，请求超时", type);
 			break;
 		case TYPE_SOCKET:
-			makeMessage(ctx, "网络异常，读取数据超时", type);
+			showErrorMessage(ctx, "网络异常，读取数据超时", type);
 			break;
 		case TYPE_NETWORK:
-			makeMessage(ctx, "网络连接失败，请检查网络设置", type);
+			showErrorMessage(ctx, "网络连接失败，请检查网络设置", type);
 			break;
 		case TYPE_XML:
-			makeMessage(ctx, "数据解析异常", type);
+			showErrorMessage(ctx, "数据解析异常", type);
 			break;
 		case TYPE_IO:
-			makeMessage(ctx, "文件流异常", type);
+			showErrorMessage(ctx, "文件流异常", type);
 			break;
 		case TYPE_RUN:
-			makeMessage(ctx, "应用程序运行时异常", type);
+			showErrorMessage(ctx, "应用程序运行时异常", type);
 			break;
 		case TYPE_OO:
-			makeMessage(ctx, "内存溢出", type);
+			showErrorMessage(ctx, "内存溢出", type);
 			break;
 		case TYPE_NULL:
-			makeMessage(ctx, "空指针异常", type);
+			showErrorMessage(ctx, "空指针异常", type);
 			break;
 		case TYPE_INDEX:
-			makeMessage(ctx, "数组越界", type);
+			showErrorMessage(ctx, "数组越界", type);
 			break;
 		case TYPE_FORMATE:
-			makeMessage(ctx, "数据类型转换异常", type);
+			showErrorMessage(ctx, "数据类型转换异常", type);
 			break;
 		}
 	}
 
 	/**
-	 * 打印错误
+	 * show error message by type
 	 * 
 	 * @param message
 	 */
-	private void makeMessage(Context context, String message,
+	private void showErrorMessage(Context context, String message,
 			int message_show_type) {
 		Log.d("exception", message);
 		switch (message_show_type) {
@@ -263,11 +263,11 @@ public class XException extends Exception {
 	// ------------------保存异常日志--------------------
 
 	/**
-	 * 保存异常日志
+	 * save error log
 	 * 
 	 * @param excp
 	 */
-	public void saveErrorLog(Exception excp) {
+	private void saveErrorLog(Exception excp) {
 		String errorlog = "errorlog.txt";
 		String savePath = "";
 		String logFilePath = "";
@@ -285,7 +285,6 @@ public class XException extends Exception {
 				}
 				logFilePath = savePath + errorlog;
 			}
-			// 没有挂载SD卡，无法写文件
 			if (logFilePath == "") {
 				return;
 			}
@@ -298,8 +297,6 @@ public class XException extends Exception {
 			pw.println("--------------------" + (new Date().toLocaleString())
 					+ "---------------------");
 			excp.printStackTrace(pw);
-			pw.close();
-			fw.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

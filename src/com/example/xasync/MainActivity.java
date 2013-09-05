@@ -1,5 +1,7 @@
 package com.example.xasync;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,13 +9,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.common.XHttp;
-import com.loopj.android.common.XJSONHandler;
-import com.loopj.android.common.XStringHanler;
+import com.loopj.android.common.XParserHandler;
 
 public class MainActivity extends Activity implements OnClickListener {
 
@@ -40,34 +39,25 @@ public class MainActivity extends Activity implements OnClickListener {
 		json.put("index", "3");
 		json.put("pagesize", "10");
 		json.put("keyword", "西游");
-		XHttp.with().getJSON(URL_JSON_ARRAY, new XJSONHandler(this, true){
+		XHttp.with().getParser(URL_JSON_ARRAY, new XParserHandler<UserInfo>(this, UserInfo.class, true){
 
 			@Override
-			public void onSuccess(JSONObject response) {
-				Log.d(TAG, "onSuccess-JSONObject");
+			public void onSuccess(UserInfo response) {
+				super.onSuccess(response);
+				show("UserInfo");
 			}
 
 			@Override
-			public void onSuccess(JSONArray response) {
-				Log.d(TAG, "onSuccess-JSONArray");
-			}
-			
-			@Override
-			public void onFailure(Throwable e, String errorResponse) {
-				Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-			}
-
-			@Override
-			public void onStart() {
-				Log.d(TAG, "onStart");
-			}
-
-			@Override
-			public void onFinish() {
-				Log.d(TAG, "onFinish");
+			public void onSuccess(List<UserInfo> response) {
+				super.onSuccess(response);
+				show("List<UserInfo>");
 			}
 			
 		});
+	}
+	
+	public void show(String message){
+		Log.d(TAG, message);
 	}
 
 }

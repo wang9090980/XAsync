@@ -1,6 +1,7 @@
 package com.example.xasync;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.annotation.JSONType;
 
 
 public class UserInfo {

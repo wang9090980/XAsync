@@ -7,6 +7,8 @@ import org.apache.http.HttpStatus;
 
 import android.content.Context;
 import android.os.Message;
+import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
@@ -27,9 +29,10 @@ public class XParserHandler<T> extends XBaseHandler {
 	}
 
 	protected static final int SUCCESS_PARSER_MESSAGE = 1000;
+	protected static final int ERROR_PARSER_MESSAGE = SUCCESS_PARSER_MESSAGE + 1;
 
-	public void onSuccess(T response){
-		
+	public void onSuccess(T response) {
+
 	}
 
 	public void onSuccess(int statusCode, Header[] headers, T response) {
@@ -39,46 +42,62 @@ public class XParserHandler<T> extends XBaseHandler {
 	public void onSuccess(int statusCode, T response) {
 		onSuccess(response);
 	}
-	
-	public void onSuccess(List<T> response){
-		
+
+	public void onSuccess(List<T> response) {
+
 	}
-	
+
 	public void onSuccess(int statusCode, Header[] headers, List<T> response) {
 		onSuccess(statusCode, response);
 	}
-	
+
 	public void onSuccess(int statusCode, List<T> response) {
 		onSuccess(response);
 	}
-	
-	public void onFailure(Throwable error, String content) {
-		
+
+	public void onFailure(Throwable e, String errorResponse) {
+		if (!TextUtils.isEmpty(errorResponse)) {
+			Toast.makeText(mContext, errorResponse, Toast.LENGTH_SHORT).show();
+		} else {
+			if (e != null && e instanceof XException) {
+				((XException) e).makeToast(mContext);
+			} else {
+				Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT)
+						.show();
+			}
+		}
 	}
 
 	@Override
 	protected void sendSuccessMessage(int statusCode, Header[] headers,
 			String responseBody) {
-		if (statusCode != HttpStatus.SC_NO_CONTENT) {
+		switch (statusCode) {
+		case HttpStatus.SC_OK: {
 			try {
-				if(responseBody.startsWith("{")){
+				if (responseBody.startsWith("{")) {
 					T jsonResponse = parseResponseObject(responseBody);
-					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
-							statusCode, headers, jsonResponse,JSON_OBJECT }));
-				}else if(responseBody.startsWith("[")){
+					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE,
+							new Object[] { statusCode, headers, jsonResponse,
+									JSON_OBJECT }));
+				} else if (responseBody.startsWith("[")) {
 					List<T> jsonResponse = parseResponseArray(responseBody);
-					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
-							statusCode, headers, jsonResponse,JSON_ARRAY }));
-				}else{
-					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
-							statusCode, null }));
+					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE,
+							new Object[] { statusCode, headers, jsonResponse,
+									JSON_ARRAY }));
+				} else {
+					sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE,
+							new Object[] { statusCode,null,null,null}));
 				}
 			} catch (JSONException e) {
 				sendFailureMessage(e, responseBody);
 			}
-		} else {
-			sendMessage(obtainMessage(SUCCESS_PARSER_MESSAGE, new Object[] {
-					statusCode, null }));
+		}
+			break;
+		case HttpStatus.SC_NO_CONTENT:
+		default:
+			sendMessage(obtainMessage(ERROR_PARSER_MESSAGE,
+					new Object[] { statusCode }));
+			break;
 		}
 	}
 
@@ -86,32 +105,44 @@ public class XParserHandler<T> extends XBaseHandler {
 	@Override
 	protected void handleMessage(Message msg) {
 		switch (msg.what) {
-		case SUCCESS_PARSER_MESSAGE:
+		case SUCCESS_PARSER_MESSAGE: {
 			Object[] response = (Object[]) msg.obj;
 			handleSuccessJsonMessage(((Integer) response[0]).intValue(),
-					(Header[]) response[1],  response[2], response[3]);
+					(Header[]) response[1], response[2], response[3]);
+		}
 			break;
-		default:
+		case ERROR_PARSER_MESSAGE: {
+			Object[] response = (Object[]) msg.obj;
+			int status = ((Integer) response[0]).intValue();
+			if (status == HttpStatus.SC_NO_CONTENT) {
+				handleFailureMessage(XException.http(status), "服务器响应成功，但未返回数据");
+			} else {
+				handleFailureMessage(XException.http(status), null);
+			}
+		}
+		default: {
 			super.handleMessage(msg);
+		}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void handleSuccessJsonMessage(int statusCode, Header[] headers,
-			Object jsonResponse,Object flag) {
+			Object jsonResponse, Object flag) {
 		if (jsonResponse != null) {
 			switch (Integer.parseInt(flag.toString())) {
-			case JSON_OBJECT: 
-				onSuccess(statusCode, headers, (T)jsonResponse);
+			case JSON_OBJECT:
+				onSuccess(statusCode, headers, (T) jsonResponse);
 				break;
 			case JSON_ARRAY:
-				onSuccess(statusCode, headers, (List<T>)jsonResponse);
+				onSuccess(statusCode, headers, (List<T>) jsonResponse);
+				break;
 			default:
-				onSuccess(statusCode, headers, jsonResponse.toString());
+				onFailure(XException.json(new Exception("数据解析异常")), null);
 				break;
 			}
 		} else {
-			onFailure(new JSONException("Unexpected jsonResponse"), null);
+			onFailure(XException.json(new Exception("数据返回异常")), null);
 		}
 	}
 
@@ -131,7 +162,7 @@ public class XParserHandler<T> extends XBaseHandler {
 		responseBody = responseBody.trim();
 		return JSON.parseObject(responseBody, mClazz);
 	}
-	
+
 	/**
 	 * 解析数据
 	 * 
@@ -139,7 +170,8 @@ public class XParserHandler<T> extends XBaseHandler {
 	 * @return
 	 * @throws JSONException
 	 */
-	protected List<T> parseResponseArray(String responseBody) throws JSONException {
+	protected List<T> parseResponseArray(String responseBody)
+			throws JSONException {
 		responseBody = responseBody.trim();
 		return JSON.parseArray(responseBody, mClazz);
 	}
