@@ -18,7 +18,7 @@ public class XHttp implements OnCancelAsyncListener {
 
 	private static final int TIME_OUT = 30 * 1000;
 
-	private static final String HTTP_HEADER_USER_AGENT_MESSAGE = "android GomeShopApp %s;";
+	private static final String HTTP_HEADER_USER_AGENT_MESSAGE = "android HyxfOrgApp %s;";
 
 	private static AsyncHttpClient mHttpClient;
 
