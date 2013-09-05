@@ -39,6 +39,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		json.put("index", "3");
 		json.put("pagesize", "10");
 		json.put("keyword", "西游");
+		
 		XHttp.with().getParser(URL_JSON_ARRAY, new XParserHandler<UserInfo>(this, UserInfo.class, true){
 
 			@Override

@@ -55,9 +55,6 @@ public class XException extends Exception {
 		super(excp);
 		this.type = type;
 		this.code = code;
-		if (Debug) {
-			//this.saveErrorLog(excp);
-		}
 	}
 
 	public int getCode() {
@@ -111,7 +108,7 @@ public class XException extends Exception {
 	public static XException xml(Exception e) {
 		return new XException(TYPE_XML, 0, e);
 	}
-	
+
 	/**
 	 * JSON异常
 	 * 
@@ -258,58 +255,5 @@ public class XException extends Exception {
 			Log.d(TAG, message);
 			break;
 		}
-	}
-
-	// ------------------保存异常日志--------------------
-
-	/**
-	 * save error log
-	 * 
-	 * @param excp
-	 */
-	private void saveErrorLog(Exception excp) {
-		String errorlog = "errorlog.txt";
-		String savePath = "";
-		String logFilePath = "";
-		FileWriter fw = null;
-		PrintWriter pw = null;
-		try {
-			// 判断是否挂载了SD卡
-			String storageState = Environment.getExternalStorageState();
-			if (storageState.equals(Environment.MEDIA_MOUNTED)) {
-				savePath = Environment.getExternalStorageDirectory()
-						.getAbsolutePath() + "/GomeLog/Log/";
-				File file = new File(savePath);
-				if (!file.exists()) {
-					file.mkdirs();
-				}
-				logFilePath = savePath + errorlog;
-			}
-			if (logFilePath == "") {
-				return;
-			}
-			File logFile = new File(logFilePath);
-			if (!logFile.exists()) {
-				logFile.createNewFile();
-			}
-			fw = new FileWriter(logFile, true);
-			pw = new PrintWriter(fw);
-			pw.println("--------------------" + (new Date().toLocaleString())
-					+ "---------------------");
-			excp.printStackTrace(pw);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (pw != null) {
-				pw.close();
-			}
-			if (fw != null) {
-				try {
-					fw.close();
-				} catch (IOException e) {
-				}
-			}
-		}
-
 	}
 }
